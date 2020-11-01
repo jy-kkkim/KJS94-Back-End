@@ -11,8 +11,8 @@ router.use(bodyParser.urlencoded({ extended:true}));
 
 router.post('/', function(req, res) {
     Visitor.create({
-      date: req.body.date,
-      auth: req.body.auth
+        date: req.body.date,
+        auth: req.body.auth
     },
     function(err, user){
         if(err) return res.status(500).send("Visitor Create Fail");

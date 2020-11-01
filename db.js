@@ -1,28 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const mosca = require('mosca')
 const controllers = require('./controllers/index')
 const db = require('./lib/mongoDB')
-const mq_client = require('./lib/mqtt')
+const mqtt = require('./lib/mqtt')
 
 const app = express();
 const port = 4000;
-const mq_settings = {
-    port: 1883,
-    persistence: mosca.persistence.Memory
-};
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
-
 // 라우터 정보
 app.use(controllers)
-
 app.listen(port, () => console.log("Express Server Running!"));
-const mq_server = new mosca.Server(mq_settings, function() {
-    console.log('*** MQTT Broker Running ***');
-});
 
 
 
