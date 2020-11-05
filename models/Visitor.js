@@ -6,4 +6,4 @@ const VisitorSchema = new mongoose.Schema({
 });
 mongoose.model('Visitor', VisitorSchema);
 
-module.exports = { User }
+module.exports = mongoose.model('Visitor');

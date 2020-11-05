@@ -15,6 +15,9 @@ const TemperatureController = require('./TemperatureController');
 const HumidityController = require('./HumidityController');
 const NoiseController = require('./NoiseController');
 const AirQualityController = require('./AirQualityController');
+const UserController = require('./UserController');
+const LoginController = require('./LoginController');
+
 
 router.use('/visitors', VisitorController)
 router.use('/mask', MaskController)
@@ -22,5 +25,7 @@ router.use('/temperature', TemperatureController)
 router.use('/humidity', HumidityController)
 router.use('/noise', NoiseController)
 router.use('/airquality', AirQualityController)
+router.use('/user', UserController)
+router.use('/login', LoginController)
 
 module.exports = router;
