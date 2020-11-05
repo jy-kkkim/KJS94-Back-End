@@ -13,7 +13,11 @@ const UsersSchema = new mongoose.Schema({
     password: {
         type: String
     },
+    name: {
+        type: String
+    },
     role: {
+        // 0이면 정상, 1이면 정지된 사용자
         type: String,
         default: 0
     },
@@ -65,6 +69,18 @@ UsersSchema.methods.generateToken = function(cb) {
     })
 }
 
+// 토큰을 복호화해 사용자 _id 찾기
+UsersSchema.statics.findByToken = function(token, cb) {
+    var user = this;
+    // 토큰을 decode 한다.
+    jwt.verify(token, 'secretToken', function (err, decoded) {
+        // 유저 아이디를 이용해 유저 찾기
+        user.findOne({ "_id": decoded, "token": token }, function(err, user) {
+            if (err) return cb(err);
+            cb(null, user)
+        })
+    })
+}
 
 
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { User } = require('./../models/User');
+const { auth } = require('./../middleware/auth');
 
 // application/x-www-form-urlencoded 형식의 데이터를 분석해서 가져온다.
 router.use(bodyParser.urlencoded({ extended:true}));
@@ -40,5 +41,33 @@ router.post('/', (req, res) => {
         })
     })
 })
+
+// 로그인 인증
+// auth 미들웨어 생성 -> /middleware/auth
+router.get('/auth', auth, (req, res) => {
+    // Authentication 이 True
+    res.status(200).json({
+        _id: req.user._id,
+        // isAdmin: req.user.role === 0 ? true : false,
+        isAuth: true,
+        uid: req.user.uid,
+        name: req.user.name
+    })
+})
+
+
+// 로그아웃시 데이터베이스에서 토큰 삭제
+router.get('/logout', auth, (req, res) => {
+    User.findOneAndUpdate({ _id: req.user._id },
+        { token: "" }
+        , (err, user) => {
+            if (err) return res.json({ success: false, err });
+            return res.status(200).send({
+                success: true
+            })
+        })
+})
+
+
 
 module.exports = router;
