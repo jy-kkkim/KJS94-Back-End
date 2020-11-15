@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const NoiseSchema = new mongoose.Schema({
-    date: String,
+    date: Date,
     noise: String
 });
 
