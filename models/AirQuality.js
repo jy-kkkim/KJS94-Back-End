@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const AirQualitySchema = new mongoose.Schema({
-    date: String,
+    date: Date,
     airquality: String
 });
 
