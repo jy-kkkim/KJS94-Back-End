@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
+const moment = require('moment');
 const Visitor = require('./../models/Visitor');
 let day = new Date();
 let today = String(day.getFullYear())+'-'+String((day.getMonth() + 1))+'-'+String(day.getDate());
@@ -33,6 +34,16 @@ router.get('/today', function(req, res) {
         res.status(200).send(visitors);
     }).sort({ "_id": -1 }).limit(10);
 });
+
+// 기간 테스트
+router.get('/test', function(req, res) {
+    const start = new Date("2020-11-14");
+    const end = new Date("2020-11-16")
+    Visitor.find({date: {$gte: start, $lt: end}}, function(err, visitors){
+        if(err) return res.status(500).send("Visitors Select Fail");
+        res.status(200).send(visitors);
+    })
+})
 
 
 module.exports = router;

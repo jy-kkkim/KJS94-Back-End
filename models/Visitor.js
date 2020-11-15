@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const VisitorSchema = new mongoose.Schema({  
-    date: String,
-    auth: String
+    date: Date,
+    auth: Number
 });
 mongoose.model('Visitor', VisitorSchema);
 

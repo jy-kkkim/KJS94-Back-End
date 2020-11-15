@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const MaskSchema = new mongoose.Schema({  
-    date: String,
-    detect: String
+    date: Date,
+    detect: Number
 });
 
 mongoose.model('Mask', MaskSchema);
