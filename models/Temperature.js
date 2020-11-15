@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const TemperatureSchema = new mongoose.Schema({
-    date: String,
-    temperature: String
+    date: Date,
+    temperature: Number
 });
 
 mongoose.model('Temperature', TemperatureSchema);

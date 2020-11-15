@@ -36,7 +36,7 @@ router.put('/:id', function(req, res) {
     //     res.status(200).send(mask);
     // });
     Mask.findById(req.params.id, function(err, mask) {
-        mask.detect = "0";
+        mask.detect = 0;
         mask.save(function(err){
             if(err) res.status(500).send("Mask Update Fail");
             res.status(200).send(mask);
