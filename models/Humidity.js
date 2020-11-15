@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const HumiditySchema = new mongoose.Schema({
-    date: String,
-    humidity: String
+    date: Date,
+    humidity: Number
 });
 
 mongoose.model('Humidity', HumiditySchema);
