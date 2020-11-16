@@ -36,13 +36,15 @@ router.get('/today', function(req, res) {
 });
 
 // 기간 테스트
-router.get('/test', function(req, res) {
+router.get('/term/:start/:end', function(req, res) {
+    //res.send(req.params.start + req.params.end);
     const start = new Date("2020-11-14");
     const end = new Date("2020-11-16")
-    Visitor.find({date: {$gte: start, $lt: end}}, function(err, visitors){
-        if(err) return res.status(500).send("Visitors Select Fail");
-        res.status(200).send(visitors);
-    })
+    res.send(start + end)
+    // Visitor.find({date: {$gte: start, $lt: end}}, function(err, visitors){
+    //     if(err) return res.status(500).send("Visitors Select Fail");
+    //     res.status(200).send(visitors);
+    // })
 })
 
 
