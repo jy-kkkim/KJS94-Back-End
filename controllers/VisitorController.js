@@ -1,10 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const moment = require('moment');
 const Visitor = require('./../models/Visitor');
-let day = new Date();
-let yesterday = String(day.getFullYear())+'-'+String((day.getMonth() + 1))+'-'+String((day.getDate() - 1));
+
+const date = new Date();
+const thisMonth = ''+ (date.getMonth()+1)
+const lastMonth = ''+ (date.getMonth()+2)
+const thisYear = date.getFullYear()
+
+if (thisMonth.length < 2) thisMonth = '0' + thisMonth;
+if (lastMonth.length < 2) lastMonth = '0' + lastMonth;
+
+const tMstart = new Date([thisYear, thisMonth].join('-'));
+const tMend = new Date([thisYear, lastMonth].join('-'));
 
 getDate = (value) => {
     let month = '' + (value.getMonth() + 1)
@@ -38,20 +46,20 @@ router.get('/', function(req, res) {
     }).sort({ "date": -1 }).limit(10);
 });
 
-// 통계
-router.get('/count', function(req, res){
-    Visitor.distinct("date", function(err, data){
+// 이번 달 방문자
+router.get('/this-month', function(req, res){
+    Visitor.find({date: {$gte: tMstart, $lt: tMend}}, function(err, data){
+    // Visitor.distinct("date", function(err, data){
         let subData = new Array();
         let countData = new Array();
 
         data.forEach((item) => {
-            subData.push(getDate(item))
+            subData.push(getDate(item.date))
         })
 
-        a = subData[0]
+        first = subData[0]
         count = 0
         subData.forEach((item, index) => {
-            //console.log(subData.length-1);
             if(index == (subData.length-1)){
                 count++;
                 countData.push({
@@ -59,7 +67,7 @@ router.get('/count', function(req, res){
                     "count": count
                 })
             }
-            else if(a == item) {
+            else if(first == item) {
                 count++
             } 
             else {
@@ -68,24 +76,15 @@ router.get('/count', function(req, res){
                     "count": count
                 })
                 count = 1
-                a = subData[index]
+                first = subData[index]
             } 
         })
-        
-
-        // let result = data.map((temp) => {
-        //     return temp.slice(0,10)
-        // })
 
         res.send(countData)
-        // 11/13 : 10
-        // 11/14 : 11
-        // 11/15 : 5
-        // 11/17 : 10
     })
 })
 
-//{$regex:today}
+// 오늘 날짜
 router.get('/today', function(req, res) {
     Visitor.find( {date: {$gte: getDate(new Date()) } }, function(err, visitors){
         if(err) return res.status(500).send("Visitors Select Fail");
