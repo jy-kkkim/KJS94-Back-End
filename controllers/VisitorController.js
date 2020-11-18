@@ -123,7 +123,7 @@ router.get('/last-month', function(req, res){
 
         res.send(countData)
     }).sort({ "date": 1 })
-})
+});
 
 // 오늘 날짜
 router.get('/today', function(req, res) {
