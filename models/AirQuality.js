@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const AirQualitySchema = new mongoose.Schema({
     date: Date,
-    airquality: String
+    airquality: Number
 });
 
 mongoose.model('AirQuality', AirQualitySchema);

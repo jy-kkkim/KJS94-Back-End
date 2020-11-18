@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const NoiseSchema = new mongoose.Schema({
     date: Date,
-    noise: String
+    noise: Number
 });
 
 mongoose.model('Noise', NoiseSchema);
