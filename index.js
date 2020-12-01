@@ -23,6 +23,13 @@ app.listen(port, () => console.log("Express Server Running!"));
 // 테스트 데이터 추가
 
 const Noise = require('./models/Noise');
+const Visitor = require('./models/Visitor')
+
+// Visitor.insertMany([
+//     { date: new Date("2020-12-01 09:11:20"), auth: 0 },
+//     { date: new Date("2020-12-01 10:11:20"), auth: 1 },
+//     { date: new Date("2020-12-01 11:11:20"), auth: 1 },
+// ])
 
 // Noise.insertMany([
 //     { date: new Date("2020-11-01 09:11:20"), noise: 1 },

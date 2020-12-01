@@ -6,6 +6,7 @@ const Visitor = require('./../models/Visitor');
 const date = new Date();
 const thisMonth = ''+ (date.getMonth()+1)
 const nextMonth = ''+ (date.getMonth()+2)
+
 const lastMonth = ''+ (date.getMonth())
 const thisYear = date.getFullYear()
 
@@ -14,7 +15,13 @@ if (nextMonth.length < 2) nextMonth = '0' + nextMonth;
 if (lastMonth.length < 2) lastMonth = '0' + lastMonth;
 
 const tMstart = new Date([thisYear, thisMonth].join('-'));
-const tMend = new Date([thisYear, nextMonth].join('-'));
+// 12월달인 경우
+let tMend;
+if (nextMonth == 13) {
+    tMend = new Date([thisYear+1, "01"].join('-'));
+} else {
+    tMend = new Date([thisYear, nextMonth].join('-'));
+}
 
 const lMstart = new Date([thisYear, lastMonth].join('-'));
 const lMend = new Date([thisYear, thisMonth].join('-'));
@@ -58,11 +65,11 @@ router.get('/this-month', function(req, res){
         let countData = new Array();
 
         data.forEach((item) => {
-            subData.push(getDate(item.date))
+            subData.push(getDate(item.date));
         })
 
-        first = subData[0]
-        count = 0
+        first = subData[0];
+        count = 0;
         subData.forEach((item, index) => {
             if(index == (subData.length-1)){
                 count++;
@@ -72,19 +79,19 @@ router.get('/this-month', function(req, res){
                 })
             }
             else if(first == item) {
-                count++
+                count++;
             } 
             else {
                 countData.push({
                     "date": subData[index-1],
                     "count": count
                 })
-                count = 1
-                first = subData[index]
+                count = 1;
+                first = subData[index];
             } 
         })
 
-        res.send(countData)
+        res.send(countData);
     }).sort({ "date": 1 })
 });
 
