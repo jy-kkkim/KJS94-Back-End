@@ -1,45 +1,13 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const Visitor = require('./../models/Visitor');
 
-const date = new Date();
-const thisMonth = ''+ (date.getMonth()+1)
-const nextMonth = ''+ (date.getMonth()+2)
+const today = new Date(moment().format("YYYY-MM-DD"));
+const tMend = new Date(moment().add(1, 'M').format("YYYY-MM-DD"));
+const lMstart = new Date(moment().subtract(1, 'M').format("YYYY-MM-DD"));
 
-const lastMonth = ''+ (date.getMonth())
-const thisYear = date.getFullYear()
-
-if (thisMonth.length < 2) thisMonth = '0' + thisMonth;
-if (nextMonth.length < 2) nextMonth = '0' + nextMonth;
-if (lastMonth.length < 2) lastMonth = '0' + lastMonth;
-
-const tMstart = new Date([thisYear, thisMonth].join('-'));
-// 12월달인 경우
-let tMend;
-if (nextMonth == 13) {
-    tMend = new Date([thisYear+1, "01"].join('-'));
-} else {
-    tMend = new Date([thisYear, nextMonth].join('-'));
-}
-
-const lMstart = new Date([thisYear, lastMonth].join('-'));
-const lMend = new Date([thisYear, thisMonth].join('-'));
-
-getDate = (value) => {
-    let month = '' + (value.getMonth() + 1)
-    let day = '' + value.getDate()
-    const year = value.getFullYear()
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
-};
-
-
-router.use(bodyParser.urlencoded({ extended:true}));
-
+// 새로운 방문자 데이터 저장
 router.post('/', function(req, res) {
     Visitor.create({
         date: req.body.date,
@@ -51,6 +19,7 @@ router.post('/', function(req, res) {
     });
 });
 
+// 방문자 데이터 가져오기(날짜 기준 내림차순, 최근 10개 데이터)
 router.get('/', function(req, res) {
     Visitor.find( {}, function(err, visitors){
         if(err) return res.status(500).send("Visitors Select Fail");
@@ -58,9 +27,9 @@ router.get('/', function(req, res) {
     }).sort({ "date": -1 }).limit(10);
 });
 
-// 이번 달 방문자
+// 이번 달
 router.get('/this-month', function(req, res){
-    Visitor.find({date: {$gte: tMstart, $lt: tMend}}, function(err, data){
+    Visitor.find({date: {$gte: today, $lt: tMend}}, function(err, data){
         let subData = new Array();
         let countData = new Array();
 
@@ -95,9 +64,9 @@ router.get('/this-month', function(req, res){
     }).sort({ "date": 1 })
 });
 
-// 지난 달 방문자
+// 지난 달
 router.get('/last-month', function(req, res){
-    Visitor.find({date: {$gte: lMstart, $lt: lMend}}, function(err, data){
+    Visitor.find({date: {$gte: lMstart, $lt: today}}, function(err, data){
         let subData = new Array();
         let countData = new Array();
 
@@ -134,18 +103,16 @@ router.get('/last-month', function(req, res){
 
 // 오늘 날짜
 router.get('/today', function(req, res) {
-    Visitor.find( {date: {$gte: getDate(new Date()) } }, function(err, visitors){
+    Visitor.find( {date: {$gte: today } }, function(err, visitors){
         if(err) return res.status(500).send("Visitors Select Fail");
         res.status(200).send(visitors);
-    }).sort({ "_id": -1 }).limit(10);
+    }).sort({ "date": -1 }).limit(10);
 });
 
-// 기간
-///term/:start/:end
-router.get('/term', function(req, res) {
-    //res.send(req.params.start + req.params.end);
-    const start = new Date("2020-11-13");
-    const end = new Date("2020-11-14")
+// 사용자 지정 기간
+router.get('/term/:start/:end', function(req, res) {
+    const start = new Date(req.params.start);
+    const end = new Date(req.params.end)
 
     Visitor.find({date: {$gte: start, $lt: end}}, function(err, visitors){
         if(err) return res.status(500).send("Visitors Select Fail");

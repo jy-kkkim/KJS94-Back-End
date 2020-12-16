@@ -2,12 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-// const Visitor = require('./models/Visitor');
-// const Mask = require('./models/Mask');
-// const Temperature = require('./models/Temperature');
-// const Humidity = require('./models/Humidity');
-// const Noise = require('./models/Noise');
-// const AirQuality = require('./models/AirQuality');
+router.use(bodyParser.urlencoded({ extended:true}));
+router.use(bodyParser.json());
 
 const VisitorController = require('./VisitorController');
 const MaskController = require('./MaskController');
@@ -17,7 +13,6 @@ const NoiseController = require('./NoiseController');
 const AirQualityController = require('./AirQualityController');
 const UserController = require('./UserController');
 const LoginController = require('./LoginController');
-
 
 router.use('/visitors', VisitorController)
 router.use('/mask', MaskController)

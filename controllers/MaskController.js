@@ -1,44 +1,13 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const Mask = require('./../models/Mask');
 
-const date = new Date();
-const thisMonth = ''+ (date.getMonth()+1)
-const nextMonth = ''+ (date.getMonth()+2)
-const lastMonth = ''+ (date.getMonth())
-const thisYear = date.getFullYear()
+const today = new Date(moment().format("YYYY-MM-DD"));
+const tMend = new Date(moment().add(1, 'M').format("YYYY-MM-DD"));
+const lMstart = new Date(moment().subtract(1, 'M').format("YYYY-MM-DD"));
 
-if (thisMonth.length < 2) thisMonth = '0' + thisMonth;
-if (nextMonth.length < 2) nextMonth = '0' + nextMonth;
-if (lastMonth.length < 2) lastMonth = '0' + lastMonth;
-
-const tMstart = new Date([thisYear, thisMonth].join('-'));
-// 12월달인 경우
-let tMend;
-if (nextMonth == 13) {
-    tMend = new Date([thisYear+1, "01"].join('-'));
-} else {
-    tMend = new Date([thisYear, nextMonth].join('-'));
-}
-
-const lMstart = new Date([thisYear, lastMonth].join('-'));
-const lMend = new Date([thisYear, thisMonth].join('-'));
-
-getDate = (value) => {
-    let month = '' + (value.getMonth() + 1)
-    let day = '' + value.getDate()
-    const year = value.getFullYear()
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
-};
-
-
-router.use(bodyParser.urlencoded({ extended:true }));
-
+// 새로운 마스크 미착용자 탐지 데이터 저장
 router.post('/', function(req, res) {
     Mask.create({
         date: req.body.date,
@@ -50,6 +19,7 @@ router.post('/', function(req, res) {
     });
 });
 
+// 마스크 미착용자 탐지 데이터 가져오기(날짜 기준 내림차순, 최근 10개 데이터)
 router.get('/', function(req, res) {
     Mask.find( {}, function(err, mask){
         if(err) return res.status(500).send("Mask Select Fail");
@@ -57,6 +27,7 @@ router.get('/', function(req, res) {
     }).sort({ "date": -1 }).limit(10);
 });
 
+// 가장 최근 마스크 미착용자 탐지 데이터
 router.get('/one', function(req, res) {
     Mask.find( {}, function(err, mask){
         if(err) return res.status(500).send("Mask Select Fail");
@@ -64,11 +35,8 @@ router.get('/one', function(req, res) {
     }).sort({ "date": -1 }).limit(1);
 });
 
+// 마스크 미착용자 탐지 데이터 관리자 승인
 router.put('/:id', function(req, res) {
-    // Mask.findByIdAndUpdate(req.params.id, req.body, {detect22: 0}, function (err, mask) {
-    //     if(err) return res.status(500).send("Mask Update Fail");
-    //     res.status(200).send(mask);
-    // });
     Mask.findById(req.params.id, function(err, mask) {
         mask.detect = 0;
         mask.save(function(err){
@@ -78,9 +46,9 @@ router.put('/:id', function(req, res) {
     })
 });
 
-// 이번 달 마스크 미착용자
+// 이번 달
 router.get('/this-month', function(req, res){
-    Mask.find({date: {$gte: tMstart, $lt: tMend}}, function(err, data){
+    Mask.find({date: {$gte: today, $lt: tMend}}, function(err, data){
         let subData = new Array();
         let detectData = new Array();
 
@@ -115,9 +83,9 @@ router.get('/this-month', function(req, res){
     }).sort({ "date": 1 })
 });
 
-// 지난 달 마스크 미착용자
+// 지난 달
 router.get('/last-month', function(req, res){
-    Mask.find({date: {$gte: lMstart, $lt: lMend}}, function(err, data){
+    Mask.find({date: {$gte: lMstart, $lt: today}}, function(err, data){
         let subData = new Array();
         let detectData = new Array();
 
@@ -151,5 +119,16 @@ router.get('/last-month', function(req, res){
         res.send(detectData)
     }).sort({ "date": 1 })
 });
+
+// 사용자 지정 기간
+router.get('/term/:start/:end', function(req, res) {
+    const start = new Date(req.params.start);
+    const end = new Date(req.params.end)
+
+    Mask.find({date: {$gte: start, $lt: end}}, function(err, mask){
+        if(err) return res.status(500).send("Mask Select Fail");
+        res.status(200).send(mask);
+    })
+})
 
 module.exports = router;

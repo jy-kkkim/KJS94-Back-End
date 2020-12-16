@@ -1,13 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const { User } = require('./../models/User');
-
-// application/x-www-form-urlencoded 형식의 데이터를 분석해서 가져온다.
-router.use(bodyParser.urlencoded({ extended:true}));
-
-// application/json 형식의 데이터를 분석해서 가져온다.
-router.use(bodyParser.json());
 
 router.post('/register', (req, res) => {
     // 회원가입 할 때 필요한 정보들을 client에서 가져와서 DB에 넣어줌
