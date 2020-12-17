@@ -7,6 +7,18 @@ const today = new Date(moment().format("YYYY-MM-DD"));
 const tMend = new Date(moment().add(1, 'M').format("YYYY-MM-DD"));
 const lMstart = new Date(moment().subtract(1, 'M').format("YYYY-MM-DD"));
 
+getDate = (value) => {
+    let month = '' + (value.getMonth() + 1)
+    let day = '' + value.getDate()
+    const year = value.getFullYear()
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+};
+
+
 // 새로운 방문자 데이터 저장
 router.post('/', function(req, res) {
     Visitor.create({
